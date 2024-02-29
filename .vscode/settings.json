@@ -1,0 +1,27 @@
+{
+    "Lua.diagnostics.disable": [
+        "lowercase-global",
+        "redundant-parameter",
+        "unbalanced-assignments",
+        "need-check-nil",
+        "duplicate-set-field",
+        "inject-field"
+    ],
+    "Lua.runtime.version": "LuaJIT",
+    "Lua.workspace.library": [
+        "${3rd}/love2d/library",
+        "src/annotations"
+    ],
+    "Lua.workspace.checkThirdParty": false,
+    "Lua.workspace.ignoreDir": [
+        ".vscode",
+        "bin",
+    ],
+    "glsllint.glslangValidatorArgs": "--glsl-version 330 --D Texel=texture2D",
+    "Lua.diagnostics.disableScheme": [
+        ".git/*",
+        "bin/*"
+    ],
+    "Lua.type.weakUnionCheck": true,
+    "Lua.workspace.ignoreSubmodules": false
+}
