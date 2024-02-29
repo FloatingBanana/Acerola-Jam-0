@@ -1,6 +1,6 @@
-# Love2D base template
+# Acerola jam 0
 
-A project template with some libraries and snippets I often use for my projects.
+My entry for [Acerola Jam 0](https://itch.io/jam/acerola-jam-0).
 
 - **src**: A folder with all the game files, including code, libraries, sounds and sprites
 
