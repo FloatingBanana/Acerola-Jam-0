@@ -16,7 +16,7 @@ local function newWallEntity(world, pos, size)
     local wall = Entity()
     wall:attachComponents(Transform2d(pos, size))
     wall:attachComponents(ShapeDraw("rectangle", true, {1,0,1}, 1))
-    wall:attachComponents(Body(world, 0))
+    wall:attachComponents(Body(world, 0, 4))
 
     return wall
 end
@@ -25,29 +25,15 @@ local world = Bump.newWorld(32)
 
 function Game:enter()
     Manager.clear()
-    
+
     local player = Entity()
     player:attachComponents(Transform2d(Vector2(100, 100), Vector2(32, 32)))
     player:attachComponents(ShapeDraw("rectangle", false, {1,1,1}, 2))
     player:attachComponents(PlayerController(200))
-    player:attachComponents(Body(world, 3))
+    player:attachComponents(Body(world, 3, 1))
 
-    local box = Entity()
-    box:attachComponents(Transform2d(Vector2(200, 100), Vector2(32, 32)))
-    box:attachComponents(ShapeDraw("rectangle", false, {1,1,0}, 2))
-    box:attachComponents(Body(world, 1))
 
-    local spring = Entity()
-    spring:attachComponents(Transform2d(Vector2(380, 368), Vector2(32, 32)))
-    spring:attachComponents(ShapeDraw("rectangle", true, {1,1,0}, 1))
-    spring:attachComponents(Body(world, 0))
-    -- spring:attachComponents(Spring(400))
-    spring:getComponent("BodyComponent").elasticity.y = 400
-
-    
     Manager.addEntity(player)
-    Manager.addEntity(box)
-    Manager.addEntity(spring)
     Manager.addEntity(newWallEntity(world, Vector2(50, 200), Vector2(300, 32)))
     Manager.addEntity(newWallEntity(world, Vector2(280, 400), Vector2(300, 32)))
 end
@@ -62,6 +48,10 @@ end
 
 function Game:keypressed(key)
     Manager.broadcastToAllComponents("keypressed", key)
+end
+
+function Game:mousepressed(x, y, button)
+    Manager.broadcastToAllComponents("mousepressed", x, y, button)
 end
 
 return Game

@@ -14,21 +14,26 @@ local Component = require "engine.composition.component"
 ---@field public world table
 ---@field public mass number
 ---@field public velocity Vector2
+---@field public friction number
+---@field public elasticity Vector2
 ---@field public pushable boolean
 ---@field public collisions BumpCollisionDescription[]
 ---
----@overload fun(world: table, mass: number): BodyComponent
+---@overload fun(world: table, mass: number, friction: number?, elasticity: Vector2?): BodyComponent
 local Body = Component:extend("BodyComponent")
-Body.Gravity = Vector2(0, 500)
+Body.Gravity = Vector2(0, 200)
 
-function Body:new(world, mass)
+function Body:new(world, mass, friction, elasticity)
     self.world = world
     self.mass = mass
     self.velocity = Vector2()
-    self.elasticity = Vector2(0,0)
-    self.pushable = true
+    self.elasticity = elasticity or Vector2()
+    self.friction = friction or 0
 
+    self.pushable = true
     self.collisions = {}
+
+    self._totalFric = 0
 end
 
 
@@ -36,6 +41,9 @@ function Body:update(dt)
     if self.mass > 0 then
         self.velocity:add(Body.Gravity * (self.mass * dt))
         self:move(self.velocity * dt)
+
+        self.velocity.x = self.velocity.x - (self.velocity.x * self._totalFric) * dt
+        self._totalFric = 0
     end
 end
 
@@ -57,14 +65,20 @@ end
 
 
 function Body:onBodyCollision(col, moveOffset)
-    local otherBody = col.other:getComponent("BodyComponent")
+    local otherBody = col.other:getComponent("BodyComponent") --[[@as BodyComponent]]
 
     if col.item == self.entity then
         if col.normal.x ~= 0 and math.abs(otherBody.velocity.x) < math.abs(self.velocity.x) then
             self.velocity.x = otherBody.velocity.x
         end
-        if col.normal.y ~= 0 and math.abs(otherBody.velocity.y) < math.abs(self.velocity.y) then
-            self.velocity.y = otherBody.velocity.y
+        if col.normal.y ~= 0 then
+            -- Get total friction
+            local fric = self.friction * otherBody.friction
+            self._totalFric = math.max(self._totalFric, fric)
+
+            if math.abs(otherBody.velocity.y) < math.abs(self.velocity.y) then
+                self.velocity.y = otherBody.velocity.y
+            end
         end
 
         self.velocity = self.velocity + otherBody.elasticity * Vector2(col.normal.x, col.normal.y)
