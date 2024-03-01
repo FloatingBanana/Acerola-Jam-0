@@ -10,7 +10,7 @@ local Utils = require "engine.misc.utils"
 local Color = require "libs.color"
 local Timer = require "libs.timer"
 local GS    = require "libs.gamestate"
-local Game  = require "states.Game"
+local Game  = require "states.GameComposition"
 
 local heart    = {x = CENTERX, y = CENTERY, s = 0}
 local back     = {x = CENTERX, y = CENTERY, s = 0, r = 0}

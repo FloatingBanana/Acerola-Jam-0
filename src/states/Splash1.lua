@@ -7,7 +7,7 @@ local Utils = require "engine.misc.utils"
 local Color = require "libs.color"
 local Timer = require "libs.timer"
 local GS    = require "libs.gamestate"
-local Game  = require "states.Game"
+local Game  = require "states.GameComposition"
 
 local heartImg = lg.newImage("assets/images/love_heart.png")
 local backImg = lg.newImage("assets/images/love_back.png")

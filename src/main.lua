@@ -10,7 +10,7 @@ local Utils = require "engine.misc.utils"
 local InputHelper = require "engine.misc.inputHelper"
 local TransitionManager = require "engine.transitions.transitionManager"
 
-local Game = require "states.Game3d"
+local Game = require "states.GameComposition"
 local Splash = require "states.Splash2"
 
 function love.load(args)
