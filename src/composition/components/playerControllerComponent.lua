@@ -4,6 +4,7 @@ local Vector2   = require "engine.math.vector2"
 
 local Pistol = require "guns.pistol"
 local Shotgun = require "guns.shotgun"
+local Machinegun = require "guns.machinegun"
 
 ---@class PlayerControllerComponent: Component
 ---
@@ -40,7 +41,7 @@ function PlayerController:update(dt)
         local pos = transform.rect.center + bulletDir * 32
 
         gun:shoot(body.world, pos, bulletDir)
-        body.velocity = body.velocity * 0.5 + direction * gun.impulse
+        body.velocity = body.velocity * 0.7 + direction * gun.impulse
     end
 end
 
