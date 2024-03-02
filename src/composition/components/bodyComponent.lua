@@ -19,6 +19,7 @@ local abs = math.abs
 ---@field public velocity Vector2
 ---@field public friction Vector2
 ---@field public elasticity Vector2
+---@field public terminalVelocity Vector2
 ---@field public pushable boolean
 ---@field public collisions BumpCollisionDescription[]
 ---@field public collisionFilter BumpCollisionFilter
@@ -32,8 +33,9 @@ function Body:new(world, mass, friction, elasticity, collisionFilter)
     self.world = world
     self.mass = mass
     self.velocity = Vector2()
-    self.elasticity = elasticity or Vector2()
     self.friction = friction or Vector2()
+    self.elasticity = elasticity or Vector2()
+    self.terminalVelocity = Vector2(1500)
 
     self.pushable = true
     self.collisions = {}
@@ -51,6 +53,8 @@ function Body:update(dt)
         self.velocity:subtract(self.velocity * self._totalFric * dt)
         self._totalFric:new(0,0)
     end
+
+    self.velocity = Vector2.Min(self.velocity, self.terminalVelocity) -- TODO: Deaccelerate smoothly to terminal velocity
 end
 
 
