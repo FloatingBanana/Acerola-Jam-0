@@ -8,6 +8,7 @@ local Component = require "engine.composition.component"
 ---| "cross"
 
 ---@alias BumpCollisionDescription {item: any, other: any, type: BumpCollisionDescription, overlaps: boolean, ti: number, move: table, normal: table, touch: table, itemRect: table, otherRect: table}
+---@alias BumpCollisionFilter fun(item: any, other: any): BumpCoollisionSolver
 
 ---@class BodyComponent: Component
 ---
@@ -18,12 +19,13 @@ local Component = require "engine.composition.component"
 ---@field public elasticity Vector2
 ---@field public pushable boolean
 ---@field public collisions BumpCollisionDescription[]
+---@field public collisionFilter BumpCollisionFilter
 ---
----@overload fun(world: table, mass: number, friction: number?, elasticity: Vector2?): BodyComponent
+---@overload fun(world: table, mass: number, friction: number?, elasticity: Vector2?, collisionFilter: BumpCollisionFilter?): BodyComponent
 local Body = Component:extend("BodyComponent")
 Body.Gravity = Vector2(0, 200)
 
-function Body:new(world, mass, friction, elasticity)
+function Body:new(world, mass, friction, elasticity, collisionFilter)
     self.world = world
     self.mass = mass
     self.velocity = Vector2()
@@ -32,6 +34,7 @@ function Body:new(world, mass, friction, elasticity)
 
     self.pushable = true
     self.collisions = {}
+    self.collisionFilter = collisionFilter
 
     self._totalFric = 0
 end
@@ -52,7 +55,7 @@ function Body:move(offset)
     local transform = self.entity:getComponent("Transform2dComponent")
 
     local target = transform.position + offset
-    local goalx, goaly, cols, len = self.world:move(self.entity, target.x, target.y)
+    local goalx, goaly, cols, len = self.world:move(self.entity, target.x, target.y, self.collisionFilter)
 
     transform.position = Vector2(goalx, goaly)
     self.collisions = cols
