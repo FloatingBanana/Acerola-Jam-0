@@ -29,18 +29,11 @@ function Builder.wall(world, pos, size)
     return wall
 end
 
-
-local bulletFilter = function(item, other)
-    if other:getComponent("BulletComponent") then
-        return nil
-    end
-    return "touch"
-end
 function Builder.bullet(world, pos, dir, damage)
     local bullet = Entity()
     bullet:attachComponents(Transform2d(pos, Vector2(8,8)))
     bullet:attachComponents(ShapeDraw("circle", true, {1,0,.2}, 1))
-    bullet:attachComponents(Body(world, 0, Vector2(), Vector2(), bulletFilter))
+    bullet:attachComponents(Body(world, 0, Vector2(), Vector2()))
     bullet:attachComponents(Bullet(dir, damage))
 
     return bullet

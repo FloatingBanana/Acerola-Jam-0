@@ -1,5 +1,11 @@
 local Component = require "engine.composition.component"
 
+local bulletFilter = function(item, other)
+    if other:getComponent("BulletComponent") then
+        return nil
+    end
+    return "touch"
+end
 
 ---@class BulletComponent: Component
 ---
@@ -14,7 +20,8 @@ end
 
 function BulletComponent:update(dt)
     local body = self.entity:getComponent("BodyComponent") --[[@as BodyComponent]]
-    
+
+    body.collisionFilter = bulletFilter
     body:move(self.direction * self.speed * dt)
 
     if #body.collisions > 0 then
