@@ -15,7 +15,7 @@ function Builder.player(world, pos)
     player:attachComponents(Transform2d(pos, Vector2(32, 32)))
     player:attachComponents(ShapeDraw("rectangle", false, {1,1,1}, 2))
     player:attachComponents(PlayerController())
-    player:attachComponents(Body(world, 3, 1))
+    player:attachComponents(Body(world, 3, Vector2(2, 0)))
 
     return player
 end
@@ -24,7 +24,7 @@ function Builder.wall(world, pos, size)
     local wall = Entity()
     wall:attachComponents(Transform2d(pos, size))
     wall:attachComponents(ShapeDraw("rectangle", true, {1,0,1}, 1))
-    wall:attachComponents(Body(world, 0, 4))
+    wall:attachComponents(Body(world, 0, Vector2(4)))
 
     return wall
 end
@@ -40,7 +40,7 @@ function Builder.bullet(world, pos, dir, damage)
     local bullet = Entity()
     bullet:attachComponents(Transform2d(pos, Vector2(8,8)))
     bullet:attachComponents(ShapeDraw("circle", true, {1,0,.2}, 1))
-    bullet:attachComponents(Body(world, 0, 0, Vector2(), bulletFilter))
+    bullet:attachComponents(Body(world, 0, Vector2(), Vector2(), bulletFilter))
     bullet:attachComponents(Bullet(dir, damage))
 
     return bullet
