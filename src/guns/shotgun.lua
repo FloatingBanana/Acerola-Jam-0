@@ -7,7 +7,7 @@ local BaseGun = require "guns.baseGun"
 local Shotgun = BaseGun:extend("Shotgun")
 
 function Shotgun:new()
-    BaseGun.new(self, 10, 400, .5)
+    BaseGun.new(self, 10, 400, .7)
 end
 
 function Shotgun:shoot(world, pos, dir)
