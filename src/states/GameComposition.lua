@@ -13,6 +13,7 @@ function Game:enter()
     CompositionManager.clear()
 
     CompositionManager.addEntity(EntityBuilder.player(world, Vector2(100, 100)))
+    CompositionManager.addEntity(EntityBuilder.enemy(world, Vector2(350, 200)))
     CompositionManager.addEntity(EntityBuilder.wall(world, Vector2(50, 200), Vector2(300, 32)))
     CompositionManager.addEntity(EntityBuilder.wall(world, Vector2(280, 400), Vector2(300, 32)))
 end

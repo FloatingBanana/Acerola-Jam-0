@@ -4,7 +4,7 @@ local bulletFilter = function(item, other)
     if other:getComponent("BulletComponent") then
         return nil
     end
-    return "touch"
+    return "cross"
 end
 
 ---@class BulletComponent: Component
@@ -30,7 +30,13 @@ function BulletComponent:update(dt)
 end
 
 function BulletComponent:onBodyCollision(col, moveOffset)
-    
+    if self.entity == col.item then
+        local otherDamageable = col.other:getComponent("DamageableComponent") --[[@as DamageableComponent]]
+
+        if otherDamageable then
+            otherDamageable:takeDamage(self.damage)
+        end
+    end
 end
 
 return BulletComponent
