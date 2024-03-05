@@ -11,12 +11,12 @@ local Enemy = require "composition.components.enemyComponent"
 local Builder = {}
 
 
-function Builder.player(world, pos)
+function Builder.player(world, pos, camera)
     local player = Entity()
 
     player:attachComponents(Transform2d(pos, Vector2(32, 32)))
     player:attachComponents(ShapeDraw("rectangle", false, {1,1,1}, 2))
-    player:attachComponents(PlayerController())
+    player:attachComponents(PlayerController(camera))
     player:attachComponents(Body(world, 3, Vector2(2, 0)))
     player:attachComponents(Damageable(10, 10, 1.5))
 

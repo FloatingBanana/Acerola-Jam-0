@@ -8,10 +8,15 @@ local Machinegun = require "guns.machinegun"
 
 ---@class PlayerControllerComponent: Component
 ---
----@overload fun(): PlayerControllerComponent
+---@field public camera Camera
+---@field public main BaseGun
+---@field public secondary BaseGun
+---
+---@overload fun(camera: Camera): PlayerControllerComponent
 local PlayerController = Component:extend("PlayerControllerComponent")
 
-function PlayerController:new()
+function PlayerController:new(camera)
+    self.camera = camera
     self.main = Pistol()
     self.secondary = Shotgun()
 end
@@ -26,7 +31,8 @@ function PlayerController:update(dt)
 
 
     -- Fire gun
-    local direction = (Vector2(love.mouse.getPosition()) - transform.rect.center):normalize()
+    local target = self.camera:toWorld(Vector2(love.mouse.getPosition()))
+    local direction = (target - transform.rect.center):normalize()
     local gun = nil
 
     if love.mouse.isDown(1) and self.main.cooldown <= 0 then
