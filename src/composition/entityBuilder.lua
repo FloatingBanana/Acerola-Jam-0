@@ -50,6 +50,8 @@ function Builder.enemy(world, pos)
     enemy:attachComponents(Damageable(30, 30, 0.5))
     enemy:attachComponents(Enemy())
 
+    enemy:getComponent("BodyComponent").pushable = false
+
     return enemy
 end
 
