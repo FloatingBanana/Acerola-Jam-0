@@ -37,12 +37,13 @@ end
 
 
 ---@param damage number
+---@param ignoreCooldown boolean?
 ---@return boolean
-function DamageableComponent:takeDamage(damage)
-    if self.cooldown <= 0 then
+function DamageableComponent:takeDamage(damage, ignoreCooldown)
+    if self.cooldown <= 0 or ignoreCooldown then
         self.health = math.max(self.health - damage, 0)
         self.cooldown = self.maxCooldown
-        self.entity:broadcastToComponents("onDamageTaken", damage)
+        self.entity:broadcastToComponents("onDamageTaken", damage, self.health)
 
         return true
     end
