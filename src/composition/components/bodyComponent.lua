@@ -99,7 +99,7 @@ function Body:onBodyCollision(col, moveOffset)
         self.velocity = self.velocity + otherBody.elasticity * col.normal
 
         -- Push objects
-        if otherBody.pushable and otherBody.mass > 0 then
+        if otherBody.pushable and otherBody.mass > 0 and self.mass > 0 then
             local push = moveOffset * (1 - col.ti) * math.min(self.mass / otherBody.mass, 1) * absNormal
             otherBody:move(push)
         end
