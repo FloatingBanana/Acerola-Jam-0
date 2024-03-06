@@ -10,8 +10,9 @@ EntityBuilder = require "composition.entityBuilder"
 
 local world = Bump.newWorld(32)
 local camera = Camera(Vector2(WIDTH/2, 0), 1)
-
 local player = nil ---@type Entity
+
+local maxHeight = 0
 
 function Game:enter()
     CompositionManager.clear()
@@ -26,6 +27,7 @@ function Game:enter()
 end
 
 function Game:draw()
+    lg.clear(.5, .5, 1)
     camera:attach()
 
     CompositionManager.broadcastToAllComponents("draw")
@@ -37,7 +39,12 @@ function Game:update(dt)
     CompositionManager.broadcastToAllComponents("update", dt)
     camera:update(dt)
 
-    camera.position.y = (player:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]).position.y
+    maxHeight = math.min(maxHeight, (player:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]).position.y)
+    camera.position.y = maxHeight
+
+    if player:getComponent("DamageableComponent").health <= 0 then
+        Game:enter()
+    end
 end
 
 function Game:keypressed(key)

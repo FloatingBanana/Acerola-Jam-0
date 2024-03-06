@@ -25,6 +25,7 @@ end
 function PlayerController:update(dt)
     local transform = self.entity:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
     local body = self.entity:getComponent("BodyComponent") --[[@as BodyComponent]]
+    local damageable = self.entity:getComponent("DamageableComponent") --[[@as DamageableComponent]]
 
     self.main:update(dt)
     self.secondary:update(dt)
@@ -49,7 +50,15 @@ function PlayerController:update(dt)
         gun:shoot(body.world, pos, bulletDir)
         body.velocity = body.velocity * 0.7 + direction * gun.impulse
     end
+
+
+    local bounds = self.camera:getBounds()
+    if transform.position.y > bounds.bottomRight.y then
+        damageable:takeDamage(1000, true)
+    end
 end
+
+
 
 function PlayerController:keypressed(k)
     if k == "a" then
