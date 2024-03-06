@@ -1,5 +1,6 @@
 local Component = require "engine.composition.component"
 local Vector2   = require "engine.math.vector2"
+local Utils     = require "engine.misc.utils"
 
 local SIZE = 4
 
@@ -29,6 +30,8 @@ function DamageableComponent:draw()
     love.graphics.rectangle("line", pos.x, pos.y, self.maxHealth * SIZE, 5)
 
     love.graphics.setLineWidth(1)
+    Utils.setFont(10)
+    lg.print(self.health .. "/" .. self.maxHealth, pos.x, pos.y - 15)
 end
 
 function DamageableComponent:update(dt)
