@@ -16,6 +16,8 @@ local Splash = require "states.Splash2"
 function love.load(args)
     Imgui.love.Init()
 
+    love.mouse.setGrabbed(true)
+
     InputHelper.registerAxis("horizontal", {"a", "left"}, {"d", "right"})
     InputHelper.registerAxis("vertical", {"w", "up"}, {"s", "down"})
 
