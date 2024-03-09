@@ -7,22 +7,35 @@ local PlayerController = require "composition.components.playerControllerCompone
 local Bullet = require "composition.components.bulletComponent"
 local Damageable = require "composition.components.damageableComponent"
 local Enemy = require "composition.components.enemyComponent"
+local CharacterBehavior = require "composition.components.characterBehavior"
 
 local Builder = {}
 
 
+---@param world unknown
+---@param pos Vector2
+---@param camera Camera
+---@return Entity
 function Builder.player(world, pos, camera)
     local player = Entity()
 
     player:attachComponents(Transform2d(pos, Vector2(32, 32)))
     player:attachComponents(ShapeDraw("rectangle", false, {1,1,1}, 2))
     player:attachComponents(PlayerController(camera))
-    player:attachComponents(Body(world, 3, Vector2(2, 0)))
-    player:attachComponents(Damageable(10, 10, 1.5))
+    player:attachComponents(Body(world, 2, Vector2(2, 0)))
+    player:attachComponents(Damageable(50, 50, 2))
+    player:attachComponents(CharacterBehavior(camera))
+
+    player:getComponent("BodyComponent").pushable = false
 
     return player
 end
 
+
+---@param world unknown
+---@param pos Vector2
+---@param size Vector2
+---@return Entity
 function Builder.wall(world, pos, size)
     local wall = Entity()
     wall:attachComponents(Transform2d(pos, size))
@@ -32,25 +45,42 @@ function Builder.wall(world, pos, size)
     return wall
 end
 
-function Builder.bullet(world, pos, dir, damage)
+
+---@param world unknown
+---@param pos Vector2
+---@param dir Vector2
+---@param damage number
+---@param ignoreComponent string
+---@return Entity
+function Builder.bullet(world, pos, dir, damage, ignoreComponent)
     local bullet = Entity()
     bullet:attachComponents(Transform2d(pos, Vector2(8,8)))
     bullet:attachComponents(ShapeDraw("circle", true, {1,0,.2}, 1))
     bullet:attachComponents(Body(world, 0))
-    bullet:attachComponents(Bullet(dir, damage))
+    bullet:attachComponents(Bullet(dir, damage, ignoreComponent))
 
     return bullet
 end
 
-function Builder.enemy(world, pos)
+
+---@param world unknown
+---@param pos Vector2
+---@param player Entity
+---@param camera Camera
+---@return Entity
+function Builder.enemy(world, pos, player, camera)
     local enemy = Entity()
+    local body = Body(world, 3, Vector2(4))
+
     enemy:attachComponents(Transform2d(pos, Vector2(32,32)))
     enemy:attachComponents(ShapeDraw("rectangle", true, {1,.4, 0}, 1))
-    enemy:attachComponents(Body(world, 1, Vector2(4)))
+    enemy:attachComponents(body)
     enemy:attachComponents(Damageable(30, 30, 0.5))
-    enemy:attachComponents(Enemy())
+    enemy:attachComponents(Enemy(player))
+    enemy:attachComponents(CharacterBehavior(camera))
 
-    enemy:getComponent("BodyComponent").pushable = false
+    body.pushable = false
+    body.terminalVelocity = Vector2(80, 10)
 
     return enemy
 end

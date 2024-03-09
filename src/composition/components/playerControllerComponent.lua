@@ -47,14 +47,8 @@ function PlayerController:update(dt)
         local bulletDir = -direction
         local pos = transform.rect.center + bulletDir * 32
 
-        gun:shoot(body.world, pos, bulletDir)
-        body.velocity = body.velocity * 0.7 + direction * gun.impulse
-    end
-
-
-    local bounds = self.camera:getBounds()
-    if transform.position.y > bounds.bottomRight.y then
-        damageable:takeDamage(1000, true)
+        gun:shoot(body.world, pos, bulletDir, "PlayerControllerComponent")
+        body.velocity = gun:applyRecoil(body.velocity, direction)
     end
 end
 
