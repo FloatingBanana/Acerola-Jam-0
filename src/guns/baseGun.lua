@@ -1,22 +1,25 @@
 local Object = require "engine.3rdparty.classic.classic"
 local Timer = require "engine.misc.timer"
+local Vector2 = require "engine.math.vector2"
 
 
 ---@class BaseGun: Object
 ---
 ---@field public damage number
 ---@field public impulse number
----@field public maxCooldown number
 ---@field public spread number
+---@field public velocityCancel number
+---@field public maxCooldown number
 ---@field public cooldown number
 ---
----@overload fun(damage: number, impulse: number, spread: number, maxCooldown: number): BaseGun
+---@overload fun(damage: number, impulse: number, spread: number, velocityCancel: number, maxCooldown: number): BaseGun
 local BaseGun = Object:extend("BaseGun")
 
-function BaseGun:new(damage, impulse, spread, maxCooldown)
+function BaseGun:new(damage, impulse, spread, velocityCancel, maxCooldown)
     self.damage = damage
     self.impulse = impulse
     self.spread = spread
+    self.velocityCancel = velocityCancel
 
     self.maxCooldown = maxCooldown
     self.cooldown = 0
@@ -30,7 +33,11 @@ function BaseGun:applySpread(dir)
     return dir:rotateBy(math.random() * self.spread*2 - self.spread)
 end
 
-function BaseGun:shoot(world, pos, dir)
+function BaseGun:applyRecoil(currVelocity, dir)
+    return currVelocity * (dir * (1-self.velocityCancel)):abs() + dir * self.impulse
+end
+
+function BaseGun:shoot(world, pos, dir, ignoreComponent)
     self.cooldown = self.maxCooldown
 end
 

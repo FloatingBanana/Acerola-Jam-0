@@ -1,7 +1,8 @@
 local Component = require "engine.composition.component"
 
+local ignoreComponent = nil
 local bulletFilter = function(item, other)
-    if other:getComponent("BulletComponent") then
+    if other:getComponent("BulletComponent") or (ignoreComponent and other:getComponent(ignoreComponent)) then
         return nil
     end
     return "cross"
@@ -9,13 +10,21 @@ end
 
 ---@class BulletComponent: Component
 ---
----@overload fun(dir, damage): BulletComponent
+---@field public direction Vector2
+---@field public damage number
+---@field public speed number
+---@field public ignoreComponent string
+---
+---@field private _destroyCounter number
+---
+---@overload fun(dir: Vector2, damage: number, ignoreComponent: string): BulletComponent
 local BulletComponent = Component:extend("BulletComponent")
 
-function BulletComponent:new(direction, damage)
+function BulletComponent:new(direction, damage, ignoreComponent)
     self.direction = direction
     self.damage = damage
-    self.speed = 500
+    self.speed = 800
+    self.ignoreComponent = ignoreComponent
 
     self._destroyCounter = 3
 end
@@ -23,6 +32,7 @@ end
 function BulletComponent:update(dt)
     local body = self.entity:getComponent("BodyComponent") --[[@as BodyComponent]]
 
+    ignoreComponent = self.ignoreComponent
     body.collisionFilter = bulletFilter
     body:move(self.direction * self.speed * dt)
 
