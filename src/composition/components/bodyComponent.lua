@@ -87,21 +87,23 @@ function Body:onBodyCollision(col, moveOffset)
         local fric = (self.friction * otherBody.friction):multiply(absNormal)
         self._totalFric = Vector2.Max(fric, self._totalFric)
 
-        -- Handle collisions against moving objects
-        if col.normal.x ~= 0 and abs(otherBody.velocity.x) < abs(self.velocity.x) then
-            self.velocity.x = otherBody.velocity.x
-        end
-        if col.normal.y ~= 0 and abs(otherBody.velocity.y) < abs(self.velocity.y) then
-            self.velocity.y = otherBody.velocity.y
-        end
-
         -- Elasticity calculation
         self.velocity = self.velocity + otherBody.elasticity * col.normal
 
-        -- Push objects
-        if otherBody.pushable and otherBody.mass > 0 and self.mass > 0 then
-            local push = moveOffset * (1 - col.ti) * math.min(self.mass / otherBody.mass, 1) * absNormal
-            otherBody:move(push)
+        if col.type ~= "cross" then
+            -- Handle collisions against moving objects
+            if col.normal.x ~= 0 and abs(otherBody.velocity.x) < abs(self.velocity.x) then
+                self.velocity.x = otherBody.velocity.x
+            end
+            if col.normal.y ~= 0 and abs(otherBody.velocity.y) < abs(self.velocity.y) then
+                self.velocity.y = otherBody.velocity.y
+            end
+            
+            -- Push objects
+            if otherBody.pushable and otherBody.mass > 0 and self.mass > 0 then
+                local push = moveOffset * (1 - col.ti) * math.min(self.mass / otherBody.mass, 1) * absNormal
+                otherBody:move(push)
+            end
         end
     end
 end
