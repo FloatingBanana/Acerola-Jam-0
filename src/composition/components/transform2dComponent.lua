@@ -12,6 +12,7 @@ local Transform = Component:extend("Transform2dComponent")
 function Transform:new(position, size)
     self.position = position
     self.size = size
+    self.direction = 0
 
     self.rect = Rect(position, size)
 end
