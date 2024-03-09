@@ -6,6 +6,11 @@ local SIZE = 4
 
 ---@class DamageableComponent: Component
 ---
+---@field public health number
+---@field public maxHealth number
+---@field public maxCooldown number
+---@field public cooldown number
+---
 ---@overload fun(health: number, maxHealth: number, cooldown: number): DamageableComponent
 local DamageableComponent = Component:extend("DamageableComponent")
 
