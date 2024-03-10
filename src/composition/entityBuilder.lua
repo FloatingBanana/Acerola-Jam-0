@@ -20,7 +20,6 @@ function Builder.player(world, pos, camera)
     local player = Entity()
 
     player:attachComponents(Transform2d(pos, Vector2(32, 32)))
-    player:attachComponents(ShapeDraw("rectangle", false, {1,1,1}, 2))
     player:attachComponents(PlayerController(camera))
     player:attachComponents(Body(world, 2, Vector2(2, 0)))
     player:attachComponents(Damageable(50, 50, 2))
