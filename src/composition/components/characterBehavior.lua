@@ -42,5 +42,15 @@ function CharacterBehaviorComponent:update(dt)
     body.collisionFilter = collisionFilter
 end
 
+function CharacterBehaviorComponent:onBodyCollision(col, moveOffset)
+    local body = self.entity:getComponent("BodyComponent") --[[@as BodyComponent]]
+    local bullet = (col.item:getComponent("BulletComponent") or col.other:getComponent("BulletComponent")) --[[@as BulletComponent]]
+
+    if bullet then
+        local impulse = bullet.direction * bullet.speed * 0.2
+        body.velocity:add(impulse)
+    end
+end
+
 
 return CharacterBehaviorComponent
