@@ -23,6 +23,7 @@ local gunSprites = {
 ---@field public camera Camera
 ---@field public main BaseGun
 ---@field public secondary BaseGun
+---@field private _tentacleAnim number
 ---
 ---@overload fun(camera: Camera): PlayerControllerComponent
 local PlayerController = Component:extend("PlayerControllerComponent")
@@ -31,6 +32,20 @@ function PlayerController:new(camera)
     self.camera = camera
     self.main = Pistol()
     self.secondary = Shotgun()
+
+    self._tentacleAnim = 0
+    self._swapCooldow = 0
+end
+
+
+function PlayerController:_swapGun()
+    local transform = self.entity:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
+
+    if self._swapCooldow <= 0 then
+        self.main, self.secondary = self.secondary, self.main
+        transform.direction =  transform.direction + math.pi
+        self._swapCooldow = 0.5
+    end
 end
 
 
@@ -43,7 +58,7 @@ function PlayerController:draw()
     local tentacles = 10
     for i = 1, tentacles do
         local angle = math.pi*2 * (i / tentacles)
-        local frame = math.floor(love.timer.getTime() * 15 + i) % 6
+        local frame = math.floor(self._tentacleAnim + i) % 6
 
         tentaclesSprite.renderArea.position.x = frame * 160
         tentaclesSprite.rotation = angle
@@ -69,19 +84,22 @@ function PlayerController:update(dt)
 
     self.main:update(dt)
     self.secondary:update(dt)
+    self._tentacleAnim = (self._tentacleAnim + 15 * dt) % 6
+    self._swapCooldow = self._swapCooldow - dt
 
 
-    -- Fire gun
     local target = self.camera:toWorld(Vector2(love.mouse.getPosition()))
-    local direction = (target - transform.rect.center):normalize()
+    local mouseDir = (target - transform.rect.center):normalize()
+    local direction = Vector2.Lerp(Vector2.CreateAngled(transform.direction, 1), mouseDir, 15*dt)
     local gun = nil
 
     transform.direction = direction.angle
 
-    if love.mouse.isDown(1) and self.main.cooldown <= 0 then
+    -- Fire gun
+    if (love.mouse.isDown(1) or love.keyboard.isDown("z")) and self.main.cooldown <= 0 then
         gun = self.main
         direction:negate()
-    elseif love.mouse.isDown(2) and self.secondary.cooldown <= 0 then
+    elseif (love.mouse.isDown(2) or love.keyboard.isDown("x")) and self.secondary.cooldown <= 0 then
         gun = self.secondary
     end
 
@@ -98,8 +116,12 @@ end
 
 function PlayerController:keypressed(k)
     if k == "a" then
-        self.main, self.secondary = self.secondary, self.main
+        self:_swapGun()
     end
+end
+
+function PlayerController:wheelmoved(x, y)
+    self:_swapGun()
 end
 
 return PlayerController
