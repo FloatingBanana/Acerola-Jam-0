@@ -1,7 +1,7 @@
 local Vector2 = require "engine.math.vector2"
 
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 1280
+HEIGHT = 720
 SCREENSIZE = Vector2(WIDTH, HEIGHT)
 
 CENTERX = WIDTH / 2
@@ -20,7 +20,7 @@ function love.conf(t)
     t.audio.mic = false
     t.audio.mixwithsystem = true
 
-    t.window.title = "Untitled"
+    t.window.title = "Agunmination - Acerola Jam 0"
     t.window.icon = nil
     t.window.width = WIDTH
     t.window.height = HEIGHT
