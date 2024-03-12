@@ -54,7 +54,6 @@ end
 function Builder.bullet(world, pos, dir, damage, ignoreComponent)
     local bullet = Entity()
     bullet:attachComponents(Transform2d(pos, Vector2(8,8)))
-    bullet:attachComponents(ShapeDraw("circle", true, {1,0,.2}, 1))
     bullet:attachComponents(Body(world, 0))
     bullet:attachComponents(Bullet(dir, damage, ignoreComponent))
 
