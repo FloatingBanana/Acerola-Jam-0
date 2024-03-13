@@ -11,15 +11,17 @@ local Vector2 = require "engine.math.vector2"
 ---@field public velocityCancel number
 ---@field public maxCooldown number
 ---@field public cooldown number
+---@field public sound Audio
 ---
----@overload fun(damage: number, impulse: number, spread: number, velocityCancel: number, maxCooldown: number): BaseGun
+---@overload fun(damage: number, impulse: number, spread: number, velocityCancel: number, maxCooldown: number, sound: Audio): BaseGun
 local BaseGun = Object:extend("BaseGun")
 
-function BaseGun:new(damage, impulse, spread, velocityCancel, maxCooldown)
+function BaseGun:new(damage, impulse, spread, velocityCancel, maxCooldown, sound)
     self.damage = damage
     self.impulse = impulse
     self.spread = spread
     self.velocityCancel = velocityCancel
+    self.sound = sound
 
     self.maxCooldown = maxCooldown
     self.cooldown = 0
@@ -39,6 +41,7 @@ end
 
 function BaseGun:shoot(world, pos, dir, ignoreComponent)
     self.cooldown = self.maxCooldown
+    self.sound:play()
 end
 
 return BaseGun

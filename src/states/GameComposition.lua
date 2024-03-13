@@ -1,17 +1,19 @@
 local Game = {}
 
-local Bump    = require "libs.bump"
-local Vector2 = require "engine.math.vector2"
-local Camera  = require "engine.misc.camera"
-local Timer   = require "engine.misc.timer"
-local Easing  = require "engine.math.easing"
-local Utils   = require "engine.misc.utils"
-local Lume    = require "engine.3rdparty.lume"
+local Bump       = require "libs.bump"
+local Vector2    = require "engine.math.vector2"
+local Camera     = require "engine.misc.camera"
+local Timer      = require "engine.misc.timer"
+local Easing     = require "engine.math.easing"
+local Utils      = require "engine.misc.utils"
+local Lume       = require "engine.3rdparty.lume"
+local AudioGroup = require "engine.audio.audioGroup"
 
 local HDR = require("engine.postProcessing.hdr")(SCREENSIZE, 1)
 local Bloom = require("engine.postProcessing.bloom")(SCREENSIZE, 3, 1)
 local ChromaticAberration = require("engine.postProcessing.chromaticAberration")(SCREENSIZE, 1)
 
+MainAudioGroup = AudioGroup()
 CompositionManager = require "engine.composition.compositionManager"
 EntityBuilder = require "composition.entityBuilder"
 
@@ -120,9 +122,10 @@ function Game:update(dt)
     end
 
     -- Time slow
-    gameData.targetTimeSpeed = love.keyboard.isDown("lctrl") and 0.2 or 1
+    gameData.targetTimeSpeed = love.keyboard.isDown("lctrl") and 0.3 or 1
     gameData.timeSpeed = Lume.lerp(gameData.timeSpeed, gameData.targetTimeSpeed, Easing.quadratic(dt*10))
     ChromaticAberration:setOffset((1 - gameData.timeSpeed) * 3)
+    MainAudioGroup.pitch = gameData.timeSpeed
 end
 
 function Game:keypressed(key)

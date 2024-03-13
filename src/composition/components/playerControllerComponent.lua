@@ -2,10 +2,16 @@ local Sprite    = require "engine.2D.sprite"
 local Component = require "engine.composition.component"
 local Vector2   = require "engine.math.vector2"
 local Rect      = require "engine.math.rect"
+local Audio     = require "engine.audio.audio"
 
 local Pistol = require "guns.pistol"
 local Shotgun = require "guns.shotgun"
 local Machinegun = require "guns.machinegun"
+
+
+local swapWeaponAudio = Audio("assets/sounds/swap.wav", "static")
+swapWeaponAudio.volume = 0.3
+MainAudioGroup:add(swapWeaponAudio)
 
 
 local bodySprite      = Sprite(love.graphics.newImage("assets/images/body.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5))
@@ -45,6 +51,8 @@ function PlayerController:_swapGun()
         self.main, self.secondary = self.secondary, self.main
         transform.direction =  transform.direction + math.pi
         self._swapCooldow = 0.5
+
+        swapWeaponAudio:play()
     end
 end
 
@@ -103,7 +111,7 @@ function PlayerController:update(dt)
         gun = self.secondary
     end
 
-    if gun then
+    if gun and self._swapCooldow <= 0 then
         local bulletDir = -direction
         local pos = transform.rect.center + bulletDir * 32
 
