@@ -8,6 +8,7 @@ local Bullet = require "composition.components.bulletComponent"
 local Damageable = require "composition.components.damageableComponent"
 local Enemy = require "composition.components.enemyComponent"
 local CharacterBehavior = require "composition.components.characterBehavior"
+local JetpackEnemy = require "composition.components.jetpackEnemyComponent"
 
 local Builder = {}
 
@@ -66,7 +67,7 @@ end
 ---@param player Entity
 ---@param camera Camera
 ---@return Entity
-function Builder.enemy(world, pos, player, camera)
+function Builder.parachuteEnemy(world, pos, player, camera)
     local enemy = Entity()
     local body = Body(world, 3, Vector2(4))
 
@@ -74,8 +75,32 @@ function Builder.enemy(world, pos, player, camera)
     enemy:attachComponents(ShapeDraw("rectangle", true, {1,.4, 0}, 1))
     enemy:attachComponents(body)
     enemy:attachComponents(Damageable(30, 30, 0.5))
-    enemy:attachComponents(Enemy(player))
+    enemy:attachComponents(Enemy(player, camera))
     enemy:attachComponents(CharacterBehavior(camera))
+
+    body.pushable = false
+    body.terminalVelocity = Vector2(80, 10)
+
+    return enemy
+end
+
+
+---@param world unknown
+---@param pos Vector2
+---@param player Entity
+---@param camera Camera
+---@return Entity
+function Builder.jetpackEnemy(world, pos, player, camera)
+    local enemy = Entity()
+    local body = Body(world, 3, Vector2(4))
+
+    enemy:attachComponents(Transform2d(pos, Vector2(32,32)))
+    enemy:attachComponents(ShapeDraw("rectangle", true, {1,.4, 0}, 1))
+    enemy:attachComponents(body)
+    enemy:attachComponents(Damageable(30, 30, 0.5))
+    enemy:attachComponents(Enemy(player, camera))
+    enemy:attachComponents(CharacterBehavior(camera))
+    enemy:attachComponents(JetpackEnemy(player))
 
     body.pushable = false
     body.terminalVelocity = Vector2(80, 10)

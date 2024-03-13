@@ -6,7 +6,7 @@ local function collisionFilter(item, other)
         return "cross"
     end
 
-    return "slide"
+    return "cross"
 end
 
 ---@class CharacterBehaviorComponent: Component

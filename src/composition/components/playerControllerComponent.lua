@@ -17,18 +17,20 @@ MainAudioGroup:add(swapWeaponAudio)
 local bodySprite      = Sprite(love.graphics.newImage("assets/images/body.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5))
 local faceSprite      = Sprite(love.graphics.newImage("assets/images/face.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5))
 local tentaclesSprite = Sprite(love.graphics.newImage("assets/images/tentacles.png"), {1,1,1,1}, Vector2(.9), 0, Vector2(0.5), Rect(Vector2(), Vector2(160)))
+local uiSprite        = Sprite(love.graphics.newImage("assets/images/game_ui.png"))
 
 local gunSprites = {
     [Pistol.ClassName]  = Sprite(love.graphics.newImage("assets/images/player_pistol.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5)),
     [Shotgun.ClassName] = Sprite(love.graphics.newImage("assets/images/player_shotgun.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5)),
 }
 
-
 ---@class PlayerControllerComponent: Component
 ---
 ---@field public camera Camera
 ---@field public main BaseGun
 ---@field public secondary BaseGun
+---@field public timeSlow number
+---@field public maxTimeSlow number
 ---@field private _tentacleAnim number
 ---
 ---@overload fun(camera: Camera): PlayerControllerComponent
@@ -38,6 +40,10 @@ function PlayerController:new(camera)
     self.camera = camera
     self.main = Pistol()
     self.secondary = Shotgun()
+
+    self.maxTimeSlow = 5
+    self.timeSlow = 5
+    self.timeSlowBlock = false
 
     self._tentacleAnim = 0
     self._swapCooldow = 0
@@ -85,15 +91,49 @@ function PlayerController:draw()
 end
 
 
+function PlayerController:uiDraw()
+    local damageable = self.entity:getComponent("DamageableComponent") --[[@as DamageableComponent]]
+
+    lg.setColor(.8,.2,.2)
+    love.graphics.rectangle("fill", 19, 19, 200 * (damageable.health / damageable.maxHealth), 11)
+
+    if self.timeSlowBlock then
+        lg.setColor(.2,.8,.8)
+    else
+        lg.setColor(.2,.8,.2)
+    end
+    love.graphics.rectangle("fill", 19, 42, 200 * (self.timeSlow / self.maxTimeSlow), 6)
+
+    lg.setColor(1,1,1)
+
+    uiSprite:draw(Vector2())
+end
+
+
 function PlayerController:update(dt)
     local transform = self.entity:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
     local body = self.entity:getComponent("BodyComponent") --[[@as BodyComponent]]
-    local damageable = self.entity:getComponent("DamageableComponent") --[[@as DamageableComponent]]
 
     self.main:update(dt)
     self.secondary:update(dt)
+
     self._tentacleAnim = (self._tentacleAnim + 15 * dt) % 6
     self._swapCooldow = self._swapCooldow - dt
+
+
+    -- Time slow
+    if love.keyboard.isDown("lctrl") and not self.timeSlowBlock then
+        self.timeSlow = math.max(self.timeSlow - GameData.trueDeltaTime, 0)
+        self.timeSlowBlock = (self.timeSlow == 0)
+
+        GameData.targetTimeSpeed = 0.3
+    else
+        self.timeSlow = math.min(self.timeSlow + 0.3 * GameData.trueDeltaTime, self.maxTimeSlow)
+
+        if self.timeSlow > self.maxTimeSlow/2 then
+            self.timeSlowBlock = false
+        end
+    end
 
 
     local target = self.camera:toWorld(Vector2(love.mouse.getPosition()))
