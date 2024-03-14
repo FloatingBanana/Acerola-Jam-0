@@ -11,7 +11,7 @@ MainAudioGroup:add(shotgunShoot)
 local Shotgun = BaseGun:extend("Shotgun")
 
 function Shotgun:new()
-    BaseGun.new(self, 10, 450, math.rad(8), .5, .9, shotgunShoot)
+    BaseGun.new(self, 10, 450, math.rad(5), .5, .9, shotgunShoot)
 end
 
 function Shotgun:shoot(world, pos, dir, ignoreComponent)

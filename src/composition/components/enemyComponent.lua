@@ -1,14 +1,31 @@
 local Component = require "engine.composition.component"
-local Timer = require "engine.misc.timer"
+local Timer     = require "engine.misc.timer"
 local Vector2   = require "engine.math.vector2"
+local Sprite    = require "engine.2D.sprite"
+local Audio     = require "engine.audio.audio"
 
 local Pistol = require "guns.pistol"
 local Shotgun = require "guns.shotgun"
 local Machinegun = require "guns.machinegun"
 
+local hitAudio = Audio("assets/sounds/soldier_damage.wav", "static")
+hitAudio.volume = 0.3
+MainAudioGroup:add(hitAudio)
+
+local deathAudio = Audio("assets/sounds/soldier_death.wav", "static")
+MainAudioGroup:add(deathAudio)
+
+
+local jetpackSprite = Sprite(love.graphics.newImage("assets/images/soldier_jetpack.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5))
+local parachuteSprite = Sprite(love.graphics.newImage("assets/images/soldier_parachute.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5))
+local shotgunSprite = Sprite(love.graphics.newImage("assets/images/soldier_shotgun.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5))
+local pistolSprite = Sprite(love.graphics.newImage("assets/images/soldier_pistol.png"), {1,1,1,1}, Vector2(1), 0, Vector2(0.5))
+
+
 ---@class EnemyComponent: Component
 ---
 ---@field public gun BaseGun
+---@field public dead boolean
 ---@field private _player Entity
 ---@field private _camera Camera
 ---
@@ -16,13 +33,53 @@ local Machinegun = require "guns.machinegun"
 local EnemyComponent = Component:extend("EnemyComponent")
 
 function EnemyComponent:new(player, camera)
-    self.gun = Pistol()
+    if math.random() <= 1/4 then
+        self.gun = Shotgun()
+    else
+        self.gun = Pistol()
+    end
 
-    self.waitTimer = Timer(0, 3, true):play()
-    self.shootTimer = Timer(0, 0.5, false)
+    self.dead = false
+
+    local waitTime = math.random(2, 5)
+    self.waitTimer = Timer(math.random() * waitTime, waitTime, true):play()
+    self.shootTimer = Timer(0, 0.3 + math.random() * 0.5, false)
 
     self._player = player
     self._camera = camera
+end
+
+
+function EnemyComponent:draw()
+    local transform = self.entity:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
+    local damageable = self.entity:getComponent("DamageableComponent") --[[@as DamageableComponent]]
+
+    local left = (math.cos(transform.direction) > 0)
+    local dir = (left and 1 or -1)
+    local bodySprite = (self.entity:getComponent("JetpackEnemyComponent") and jetpackSprite or parachuteSprite)
+
+
+    local color = damageable.health > 0 and {1,1,1,1} or {.2,.2,.2,1}
+    bodySprite.color = color
+    shotgunSprite.color = color
+    pistolSprite.color = color
+
+    bodySprite.size.x = dir
+    bodySprite:draw(transform.rect.center)
+
+
+    if self.gun.ClassName == "Pistol" then
+        pistolSprite.rotation = transform.direction
+        pistolSprite.size.y = dir
+
+        pistolSprite:draw(transform.rect.center)
+    elseif self.gun.ClassName == "Shotgun" then
+        shotgunSprite.rotation = transform.direction
+        shotgunSprite.size.y = dir
+
+        shotgunSprite:draw(transform.rect.center)
+    end
+
 end
 
 
@@ -35,6 +92,12 @@ function EnemyComponent:update(dt)
     local playerDamageable = self._player:getComponent("DamageableComponent") --[[@as DamageableComponent]]
 
     if damageable.health <= 0 then
+        body.velocity.y = 500
+        body.terminalVelocity = Vector2(20, 500)
+        return
+    end
+
+    if transform.rect.topLeft.y > self._camera:getBounds().bottomRight.y+64 then
         CompositionManager.removeEntity(self.entity)
     end
 
@@ -54,6 +117,17 @@ function EnemyComponent:update(dt)
     end
 
     self.gun:update(dt)
+end
+
+function EnemyComponent:onDamageTaken(damage, health)
+    if not self.dead then
+        hitAudio:play()
+
+        if health <= 0 then
+            deathAudio:play()
+            self.dead = true
+        end
+    end
 end
 
 return EnemyComponent

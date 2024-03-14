@@ -29,20 +29,17 @@ function JetpackEnemyComponent:_randomizeOffset()
 end
 
 
-function JetpackEnemyComponent:draw()
-    local transform = self.entity:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
-
-    love.graphics.print(tostring(self.offset), transform.position.x, transform.position.y + 50)
-end
-
-
 function JetpackEnemyComponent:update(dt)
     local transform = self.entity:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
     local body = self.entity:getComponent("BodyComponent") --[[@as BodyComponent]]
     local damageable = self.entity:getComponent("DamageableComponent") --[[@as DamageableComponent]]
 
-    local playerTransform = self._player:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
 
+    if damageable.health <= 0 then
+        return
+    end
+
+    local playerTransform = self._player:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
     local target = playerTransform.rect.center + self.offset
     local dir = target - transform.rect.center
     local dist = dir.length

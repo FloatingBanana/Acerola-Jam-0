@@ -9,7 +9,7 @@ CENTERY = HEIGHT / 2
 CENTERPOS = Vector2(CENTERX, CENTERY)
 
 function love.conf(t)
-    t.identity = nil
+    t.identity = "agunmination"
     t.appendidentity = false
     t.version = "11.3"
     t.console = false
