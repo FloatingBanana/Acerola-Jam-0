@@ -36,7 +36,7 @@ function DamageableComponent:draw()
 
     love.graphics.setLineWidth(1)
     Utils.setFont(10)
-    lg.print(self.health .. "/" .. self.maxHealth, pos.x, pos.y - 15)
+    love.graphics.print(self.health .. "/" .. self.maxHealth, pos.x, pos.y - 15)
 end
 
 function DamageableComponent:update(dt)

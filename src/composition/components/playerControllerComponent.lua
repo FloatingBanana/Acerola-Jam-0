@@ -115,13 +115,13 @@ end
 function PlayerController:uiDraw()
     local damageable = self.entity:getComponent("DamageableComponent") --[[@as DamageableComponent]]
 
-    lg.setColor(.8,.2,.2, self._uiFade)
+    love.graphics.setColor(.8,.2,.2, self._uiFade)
     love.graphics.rectangle("fill", 19, 19, 200 * (damageable.health / damageable.maxHealth), 11)
 
     if self.timeSlowBlock then
-        lg.setColor(.2,.8,.8, self._uiFade)
+        love.graphics.setColor(.2,.8,.8, self._uiFade)
     else
-        lg.setColor(.2,.8,.2, self._uiFade)
+        love.graphics.setColor(.2,.8,.2, self._uiFade)
     end
     love.graphics.rectangle("fill", 19, 42, 200 * (self.timeSlow / self.maxTimeSlow), 6)
 
@@ -137,7 +137,7 @@ function PlayerController:uiDraw()
     love.graphics.print(("Height: %d m"):format(-GameData.height), WIDTH - 280, 40)
     love.graphics.print(("Record: %d m"):format(-GameData.maxHeight), WIDTH - 280, 90)
 
-    lg.setColor(1,1,1)
+    love.graphics.setColor(1,1,1)
 end
 
 

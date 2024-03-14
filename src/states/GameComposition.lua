@@ -110,7 +110,7 @@ end
 
 function Game:draw()
     love.graphics.setCanvas(screenCanvas)
-        lg.clear(.5, .5, 1)
+        love.graphics.clear(.5, .5, 1)
 
         love.graphics.draw(skyGradient, 0, 0, 0, WIDTH, HEIGHT/3)
 
