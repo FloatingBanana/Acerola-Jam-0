@@ -3,6 +3,11 @@ local Timer     = require "engine.misc.timer"
 local Vector2   = require "engine.math.vector2"
 local Sprite    = require "engine.2D.sprite"
 local Audio     = require "engine.audio.audio"
+local Utils     = require "engine.misc.utils"
+
+
+local BARSIZE = 3
+
 
 local Pistol = require "guns.pistol"
 local Shotgun = require "guns.shotgun"
@@ -80,6 +85,20 @@ function EnemyComponent:draw()
         shotgunSprite:draw(transform.rect.center)
     end
 
+
+    local pos = Vector2(transform.rect.center.x - damageable.maxHealth * BARSIZE / 2, transform.rect.bottomRight.y + 30)
+
+    love.graphics.setLineWidth(2)
+
+    love.graphics.setColor(1,.5,.5)
+    love.graphics.rectangle("fill", pos.x, pos.y, damageable.health * BARSIZE, 5)
+
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", pos.x, pos.y, damageable.maxHealth * BARSIZE, 5)
+
+    love.graphics.setLineWidth(1)
+    Utils.setFont(10)
+    love.graphics.print(damageable.health .. "/" .. damageable.maxHealth, pos.x, pos.y - 15)
 end
 
 

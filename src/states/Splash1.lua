@@ -70,7 +70,7 @@ function Splash:draw()
 
     -- Right text
 	Utils.setFont("assets/fonts/polished.ttf", 30)
-	lg.printf("Game JaaJ V", CENTERX, text2.y, CENTERX, "center")
+	lg.printf("Acerola Jam 0", CENTERX, text2.y, CENTERX, "center")
 end
 
 return Splash

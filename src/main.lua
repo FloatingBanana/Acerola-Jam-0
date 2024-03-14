@@ -10,7 +10,7 @@ local InputHelper = require "engine.misc.inputHelper"
 local TransitionManager = require "engine.transitions.transitionManager"
 
 local Game = require "states.GameComposition"
-local Splash = require "states.Splash2"
+local Splash = require "states.Splash1"
 
 function love.load(args)
     love.mouse.setGrabbed(true)
@@ -19,7 +19,7 @@ function love.load(args)
     InputHelper.registerAxis("vertical", {"w", "up"}, {"s", "down"})
 
     GS.registerEvents({"update"})
-    GS.switch(Game)
+    GS.switch(Splash)
 end
 
 
@@ -30,7 +30,7 @@ function love.draw() ---@diagnostic disable-line: duplicate-set-field
 
     Utils.setFont(13)
     love.graphics.setColor(1,1,1,1)
-    love.graphics.print("FPS: " .. love.timer.getFPS())
+    -- love.graphics.print("FPS: " .. love.timer.getFPS())
 end
 
 function love.update(dt)
