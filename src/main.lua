@@ -1,6 +1,7 @@
 -- VS Code debugger
 if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
     require("lldebugger").start()
+    DEBUG = true
 end
 
 -- Misc
@@ -19,7 +20,12 @@ function love.load(args)
     InputHelper.registerAxis("vertical", {"w", "up"}, {"s", "down"})
 
     GS.registerEvents({"update"})
-    GS.switch(Splash)
+
+    if DEBUG then
+        GS.switch(Game)
+    else
+        GS.switch(Splash)
+    end
 end
 
 
@@ -30,7 +36,10 @@ function love.draw() ---@diagnostic disable-line: duplicate-set-field
 
     Utils.setFont(13)
     love.graphics.setColor(1,1,1,1)
-    -- love.graphics.print("FPS: " .. love.timer.getFPS())
+
+    if DEBUG then
+        love.graphics.print("FPS: " .. love.timer.getFPS())
+    end
 end
 
 function love.update(dt)

@@ -1,5 +1,6 @@
 local Vector2 = require "engine.math.vector2"
 
+DEBUG = false
 WIDTH = 1280
 HEIGHT = 720
 SCREENSIZE = Vector2(WIDTH, HEIGHT)
