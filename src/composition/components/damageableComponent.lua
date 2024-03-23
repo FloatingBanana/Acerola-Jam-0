@@ -28,7 +28,7 @@ end
 ---@param ignoreCooldown boolean?
 ---@return boolean
 function DamageableComponent:takeDamage(entity, damage, ignoreCooldown)
-    if self.cooldown <= 0 or ignoreCooldown then
+    if self.health > 0 and (self.cooldown <= 0 or ignoreCooldown) then
         local justDied = (self.health <= damage)
 
         self.health = math.max(self.health - damage, 0)
