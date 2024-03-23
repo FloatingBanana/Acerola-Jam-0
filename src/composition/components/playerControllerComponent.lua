@@ -197,8 +197,9 @@ end
 function PlayerController:onDamageTaken(entity, damage, justDied)
     if not justDied then
         self.camera:shake(.5, 5, .1)
-        hitAudio:play()
     end
+    
+    hitAudio:play()
 end
 
 

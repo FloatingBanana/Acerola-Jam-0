@@ -137,10 +137,10 @@ function EnemyComponent:update(dt)
 end
 
 function EnemyComponent:onDamageTaken(entity, damage, justDied)
+    hitAudio:play()
+
     if justDied then
         deathAudio:play()
-    else
-        hitAudio:play()
     end
 end
 
