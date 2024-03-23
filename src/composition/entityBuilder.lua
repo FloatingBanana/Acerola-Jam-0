@@ -27,6 +27,7 @@ function Builder.player(world, pos, camera)
     player:attachComponents(CharacterBehavior(camera))
 
     player:getComponent("BodyComponent").pushable = false
+    player:getComponent("CharacterBehaviorComponent").bloodParticles:setColors(.2,0,.5,1)
 
     return player
 end
@@ -71,8 +72,8 @@ function Builder.parachuteEnemy(world, pos, player, camera)
     local enemy = Entity()
     local body = Body(world, 3, Vector2(4))
 
-    enemy:attachComponents(Transform2d(pos, Vector2(32,32)))
-    -- enemy:attachComponents(ShapeDraw("rectangle", true, {1,.4, 0}, 1))
+    enemy:attachComponents(Transform2d(pos, Vector2(32,45)))
+    -- enemy:attachComponents(ShapeDraw("rectangle", false, {1,.4, 0}, 1))
     enemy:attachComponents(body)
     enemy:attachComponents(Damageable(30, 30, 0.2))
     enemy:attachComponents(Enemy(player, camera))
@@ -94,8 +95,8 @@ function Builder.jetpackEnemy(world, pos, player, camera)
     local enemy = Entity()
     local body = Body(world, 3, Vector2(4))
 
-    enemy:attachComponents(Transform2d(pos, Vector2(32,32)))
-    -- enemy:attachComponents(ShapeDraw("rectangle", true, {1,.4, 0}, 1))
+    enemy:attachComponents(Transform2d(pos, Vector2(32,45)))
+    -- enemy:attachComponents(ShapeDraw("rectangle", false, {1,.4, 0}, 1))
     enemy:attachComponents(body)
     enemy:attachComponents(Damageable(20, 20, 0.2))
     enemy:attachComponents(Enemy(player, camera))

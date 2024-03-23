@@ -36,7 +36,6 @@ local gunSprites = {
 ---@field public camera Camera
 ---@field public main BaseGun
 ---@field public secondary BaseGun
----@field public dead boolean
 ---@field public timeSlow number
 ---@field public maxTimeSlow number
 ---@field private _tentacleAnim number
@@ -51,7 +50,6 @@ function PlayerController:new(camera)
     self.main = Pistol()
     self.secondary = Shotgun()
 
-    self.dead = false
     self.maxTimeSlow = 6
     self.timeSlow = 6
     self.timeSlowBlock = false
@@ -63,11 +61,11 @@ end
 
 
 function PlayerController:_swapGun()
-    local transform = self.entity:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
-
     if self._swapCooldow <= 0 then
+        local transform = self.entity:getComponent("Transform2dComponent") --[[@as Transform2dComponent]]
+
         self.main, self.secondary = self.secondary, self.main
-        transform.direction =  transform.direction + math.pi
+        transform.direction = transform.direction + math.pi
         self._swapCooldow = 0.5
 
         swapWeaponAudio:play()
@@ -118,11 +116,9 @@ function PlayerController:uiDraw()
     love.graphics.setColor(.8,.2,.2, self._uiFade)
     love.graphics.rectangle("fill", 19, 19, 200 * (damageable.health / damageable.maxHealth), 11)
 
-    if self.timeSlowBlock then
-        love.graphics.setColor(.2,.8,.8, self._uiFade)
-    else
-        love.graphics.setColor(.2,.8,.2, self._uiFade)
-    end
+
+    local timeSlowBarColor = self.timeSlowBlock and {.2,.8,.8, self._uiFade} or {.2,.8,.2, self._uiFade}
+    love.graphics.setColor(timeSlowBarColor)
     love.graphics.rectangle("fill", 19, 42, 200 * (self.timeSlow / self.maxTimeSlow), 6)
 
 
@@ -198,12 +194,10 @@ function PlayerController:update(dt)
 end
 
 
-function PlayerController:onDamageTaken(damage, health)
-    if not self.dead then
+function PlayerController:onDamageTaken(entity, damage, justDied)
+    if not justDied then
         self.camera:shake(.5, 5, .1)
         hitAudio:play()
-
-        self.dead = (health <= 0)
     end
 end
 

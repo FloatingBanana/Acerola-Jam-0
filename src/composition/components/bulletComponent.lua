@@ -11,9 +11,8 @@ vec4 effect(vec4 color, sampler2D tex, vec2 texcoords, vec2 screencoords) {
 ]]
 
 
-local ignoreComponent = nil
 local bulletFilter = function(item, other)
-    if other:getComponent("BulletComponent") or (ignoreComponent and other:getComponent(ignoreComponent)) then
+    if other:getComponent("BulletComponent") then
         return nil
     end
     return "cross"
@@ -47,10 +46,10 @@ function BulletComponent:draw()
     bulletSprite:draw(transform.position, bulletShader)
 end
 
+
 function BulletComponent:update(dt)
     local body = self.entity:getComponent("BodyComponent") --[[@as BodyComponent]]
 
-    ignoreComponent = self.ignoreComponent
     body.collisionFilter = bulletFilter
     body:move(self.direction * self.speed * dt)
 
@@ -61,14 +60,17 @@ function BulletComponent:update(dt)
     end
 end
 
-function BulletComponent:onBodyCollision(col, moveOffset)
-    local otherDamageable = col.other:getComponent("DamageableComponent") --[[@as DamageableComponent]]
 
-    if otherDamageable then
-        otherDamageable:takeDamage(self.damage)
+function BulletComponent:onBodyCollision(col, other, moveOffset)
+    if not self.ignoreComponent or not other:getComponent(self.ignoreComponent) then
+        local otherDamageable = other:getComponent("DamageableComponent") --[[@as DamageableComponent]]
+
+        if otherDamageable then
+            otherDamageable:takeDamage(self.entity, self.damage)
+        end
+
+        self._destroyCounter = 0
     end
-
-    self._destroyCounter = 0
 end
 
 return BulletComponent

@@ -27,11 +27,13 @@ end
 ---@param damage number
 ---@param ignoreCooldown boolean?
 ---@return boolean
-function DamageableComponent:takeDamage(damage, ignoreCooldown)
+function DamageableComponent:takeDamage(entity, damage, ignoreCooldown)
     if self.cooldown <= 0 or ignoreCooldown then
+        local justDied = (self.health <= damage)
+
         self.health = math.max(self.health - damage, 0)
         self.cooldown = self.maxCooldown
-        self.entity:broadcastToComponents("onDamageTaken", damage, self.health)
+        self.entity:broadcastToComponents("onDamageTaken", entity, damage, justDied)
 
         return true
     end

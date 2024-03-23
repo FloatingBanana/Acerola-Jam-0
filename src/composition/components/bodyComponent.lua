@@ -72,14 +72,14 @@ function Body:move(offset)
         col.move = Vector2(col.move.x, col.move.y)
         col.touch = Vector2(col.touch.x, col.touch.y)
 
-        self.entity:broadcastToComponents("onBodyCollision", col, offset)
-        cols[i].other:broadcastToComponents("onBodyCollision", col, offset)
+        self.entity:broadcastToComponents("onBodyCollision", col, col.other, offset)
+        col.other:broadcastToComponents("onBodyCollision", col, self.entity, offset)
     end
 end
 
 
-function Body:onBodyCollision(col, moveOffset)
-    local otherBody = col.other:getComponent("BodyComponent") --[[@as BodyComponent]]
+function Body:onBodyCollision(col, other, moveOffset)
+    local otherBody = other:getComponent("BodyComponent") --[[@as BodyComponent]]
     local absNormal = Vector2(abs(col.normal.y), abs(col.normal.x))
 
     if col.item == self.entity then

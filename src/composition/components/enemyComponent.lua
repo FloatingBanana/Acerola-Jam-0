@@ -30,7 +30,6 @@ local pistolSprite = Sprite(love.graphics.newImage("assets/images/soldier_pistol
 ---@class EnemyComponent: Component
 ---
 ---@field public gun BaseGun
----@field public dead boolean
 ---@field private _player Entity
 ---@field private _camera Camera
 ---
@@ -43,8 +42,6 @@ function EnemyComponent:new(player, camera)
     else
         self.gun = Pistol()
     end
-
-    self.dead = false
 
     local waitTime = math.random(2, 5)
     self.waitTimer = Timer(math.random() * waitTime, waitTime, true):play()
@@ -64,7 +61,8 @@ function EnemyComponent:draw()
     local bodySprite = (self.entity:getComponent("JetpackEnemyComponent") and jetpackSprite or parachuteSprite)
 
 
-    local color = damageable.health > 0 and {1,1,1,1} or {.2,.2,.2,1}
+    local dmgc = damageable.cooldown / damageable.maxCooldown
+    local color = damageable.health > 0 and {1, 1-dmgc,1-dmgc,1} or {.2,.2,.2,1}
     bodySprite.color = color
     shotgunSprite.color = color
     pistolSprite.color = color
@@ -138,14 +136,11 @@ function EnemyComponent:update(dt)
     self.gun:update(dt)
 end
 
-function EnemyComponent:onDamageTaken(damage, health)
-    if not self.dead then
+function EnemyComponent:onDamageTaken(entity, damage, justDied)
+    if justDied then
+        deathAudio:play()
+    else
         hitAudio:play()
-
-        if health <= 0 then
-            deathAudio:play()
-            self.dead = true
-        end
     end
 end
 

@@ -47,8 +47,8 @@ function JetpackEnemyComponent:update(dt)
     body.velocity = dir:normalize() * math.min(self.speed, dist)
 end
 
-function JetpackEnemyComponent:onBodyCollision(col, moveOffset)
-    if math.random() <= 1/3 and (col.item:getComponent("BulletComponent") or col.other:getComponent("BulletComponent")) then
+function JetpackEnemyComponent:onBodyCollision(col, other, moveOffset)
+    if math.random() <= 1/3 and other:getComponent("BulletComponent") then
         self:_randomizeOffset()
     end
 end
