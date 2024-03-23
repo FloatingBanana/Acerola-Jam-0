@@ -16,7 +16,6 @@ local TransitionManager = require "engine.transitions.transitionManager"
 local Fade              = require "engine.transitions.fade"
 
 -- Posprocessing effects
-local HDR = require("engine.postProcessing.hdr")(SCREENSIZE, 1)
 local Bloom = require("engine.postProcessing.bloom")(SCREENSIZE, 3, 1)
 local ChromaticAberration = require("engine.postProcessing.chromaticAberration")(SCREENSIZE, 1)
 
@@ -81,13 +80,47 @@ startTimer.onEndedEvent:addCallback(function()
 end)
 
 
+
+local function updateEnemySpawn()
+    local bounds = camera:getBounds()
+
+    if GameData.height < GameData.enemySpawn then
+        if GameData.enemySpawn % 2000 == 0 then
+            for i=1, math.random(1, 3) do
+                local enemyPos = Vector2(math.random(0, WIDTH-32), bounds.topLeft.y - 32)
+                CompositionManager.addEntity(EntityBuilder.jetpackEnemy(world, enemyPos, player, camera))
+            end
+
+            if math.random() <= 1/3 then
+                local enemyPos = Vector2(math.random(0, WIDTH-32), bounds.topLeft.y - 32 - math.random(0, 128))
+                CompositionManager.addEntity(EntityBuilder.parachuteEnemy(world, enemyPos, player, camera))
+            end
+
+        elseif GameData.enemySpawn % 1000 == 0 then
+            for i=1, math.random(1, 3) do
+                local enemyPos = Vector2(math.random(0, WIDTH-32), bounds.topLeft.y - 32 - math.random(0, 128))
+                CompositionManager.addEntity(EntityBuilder.parachuteEnemy(world, enemyPos, player, camera))
+
+            end
+
+            if math.random() <= 1/3 then
+                local enemyPos = Vector2(math.random(0, WIDTH-32), bounds.topLeft.y - 32)
+                CompositionManager.addEntity(EntityBuilder.jetpackEnemy(world, enemyPos, player, camera))
+            end
+        end
+
+        GameData.enemySpawn = GameData.enemySpawn - 1000
+    end
+end
+
+
 function Game:enter()
     CompositionManager.clear()
 
     local data = love.filesystem.read("agunmination.sav")
 
 
-    GameData.maxHeight = data and (tostring(data) or 0) or 0
+    GameData.maxHeight = data and (tonumber(data) or 0) or 0
     GameData.height = 0
     GameData.enemySpawn = -1000
     GameData.timeSpeed = 1
@@ -110,19 +143,16 @@ end
 
 function Game:draw()
     love.graphics.setCanvas(screenCanvas)
-        love.graphics.clear(.5, .5, 1)
+        love.graphics.clear()
 
         love.graphics.draw(skyGradient, 0, 0, 0, WIDTH, HEIGHT/3)
-
         Background1Sprite:draw(Vector2(0, HEIGHT - GameData.height*0.1):add(camera.shakeOffset))
 
         WallSprite.renderArea.topLeft.y = GameData.height
         WallSprite:draw(camera.shakeOffset)
 
         camera:attach()
-
         CompositionManager.broadcastToAllComponents("draw")
-
         camera:detach()
 
         MenuNameSprite.color[4] = 1 - menuFadeOut
@@ -138,7 +168,6 @@ function Game:draw()
     -- Post processing
     local result = screenCanvas
     result = Bloom:onPostRender(nil, result)
-    result = HDR:onPostRender(nil, screenCanvas)
     result = ChromaticAberration:onPostRender(nil, result)
 
     love.graphics.draw(result)
@@ -154,7 +183,7 @@ function Game:draw()
 end
 
 function Game:update(dt)
-    dt = math.min(love.timer.getAverageDelta(), 1)
+    dt = math.min(love.timer.getAverageDelta(), 1/30)
     GameData.trueDeltaTime = dt
 
 
@@ -184,36 +213,7 @@ function Game:update(dt)
             love.filesystem.write("agunmination.sav", tostring(GameData.maxHeight))
         end
 
-
-        -- Spawn enemies
-        if GameData.height < GameData.enemySpawn then
-
-            if GameData.enemySpawn % 2000 == 0 then
-                for i=1, math.random(1, 3) do
-                    local enemyPos = Vector2(math.random(0, WIDTH-32), bounds.topLeft.y - 32)
-                    CompositionManager.addEntity(EntityBuilder.jetpackEnemy(world, enemyPos, player, camera))
-                end
-
-                if math.random() <= 1/3 then
-                    local enemyPos = Vector2(math.random(0, WIDTH-32), bounds.topLeft.y - 32 - math.random(0, 128))
-                    CompositionManager.addEntity(EntityBuilder.parachuteEnemy(world, enemyPos, player, camera))
-                end
-
-            elseif GameData.enemySpawn % 1000 == 0 then
-                for i=1, math.random(1, 3) do
-                    local enemyPos = Vector2(math.random(0, WIDTH-32), bounds.topLeft.y - 32 - math.random(0, 128))
-                    CompositionManager.addEntity(EntityBuilder.parachuteEnemy(world, enemyPos, player, camera))
-
-                end
-
-                if math.random() <= 1/3 then
-                    local enemyPos = Vector2(math.random(0, WIDTH-32), bounds.topLeft.y - 32)
-                    CompositionManager.addEntity(EntityBuilder.jetpackEnemy(world, enemyPos, player, camera))
-                end
-            end
-
-            GameData.enemySpawn = GameData.enemySpawn - 1000
-        end
+        updateEnemySpawn()
     end
 
 
