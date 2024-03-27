@@ -19,6 +19,10 @@ local Fade              = require "engine.transitions.fade"
 local Bloom = require("engine.postProcessing.bloom")(SCREENSIZE, 3, 1)
 local ChromaticAberration = require("engine.postProcessing.chromaticAberration")(SCREENSIZE, 1)
 
+local vignetteShader = Utils.newPreProcessedShader("engine/shaders/postprocessing/vignette.glsl")
+vignetteShader:send("u_color", {0,0,0,1})
+vignetteShader:send("u_intensity", 35)
+vignetteShader:send("u_power", 0.25)
 
 -- Global stuff
 MainAudioGroup = AudioGroup()
@@ -117,6 +121,7 @@ end
 function Game:enter()
     CompositionManager.clear()
 
+    math.randomseed(os.time())
     local data = love.filesystem.read("agunmination.sav")
 
 
@@ -140,6 +145,8 @@ function Game:enter()
 
     TransitionManager.play(Fade(1, false, {0,0,0,1}))
 end
+
+
 
 function Game:draw()
     love.graphics.setCanvas(screenCanvas)
@@ -170,7 +177,9 @@ function Game:draw()
     result = Bloom:onPostRender(nil, result)
     result = ChromaticAberration:onPostRender(nil, result)
 
+    love.graphics.setShader(vignetteShader)
     love.graphics.draw(result)
+    love.graphics.setShader()
 
     CompositionManager.broadcastToAllComponents("uiDraw")
 
@@ -181,6 +190,8 @@ function Game:draw()
         GameoverSprite:draw(Vector2())
     end
 end
+
+
 
 function Game:update(dt)
     dt = math.min(love.timer.getAverageDelta(), 1/30)
