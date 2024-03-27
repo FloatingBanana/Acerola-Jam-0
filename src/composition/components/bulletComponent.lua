@@ -6,7 +6,7 @@ local bulletSprite = Sprite(love.graphics.newImage("assets/images/bullet.png"), 
 
 local bulletShader = love.graphics.newShader [[
 vec4 effect(vec4 color, sampler2D tex, vec2 texcoords, vec2 screencoords) {
-    return Texel(tex, texcoords) * 3.0; //+ vec4(1,1,1,0);
+    return Texel(tex, texcoords) * color * 3.0;
 }
 ]]
 
