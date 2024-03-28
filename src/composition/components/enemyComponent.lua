@@ -18,6 +18,7 @@ hitAudio.volume = 0.3
 MainAudioGroup:add(hitAudio)
 
 local deathAudio = Audio("assets/sounds/soldier_death.wav", "static")
+deathAudio.volume = 0.4
 MainAudioGroup:add(deathAudio)
 
 
