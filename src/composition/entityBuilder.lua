@@ -9,6 +9,7 @@ local Damageable = require "composition.components.damageableComponent"
 local Enemy = require "composition.components.enemyComponent"
 local CharacterBehavior = require "composition.components.characterBehavior"
 local JetpackEnemy = require "composition.components.jetpackEnemyComponent"
+local GunImpact = require "composition.components.gunImpactComponent"
 
 local Builder = {}
 
@@ -60,6 +61,24 @@ function Builder.bullet(world, pos, dir, damage, ignoreComponent)
     bullet:attachComponents(Bullet(dir, damage, ignoreComponent))
 
     return bullet
+end
+
+
+
+---@param pos Vector2
+---@param angle number
+---@return Entity
+function Builder.gunImpact(pos, angle)
+    local impact = Entity()
+
+    local transform = Transform2d(pos, Vector2(32))
+    transform.direction = angle
+
+    impact:attachComponents(transform)
+    impact:attachComponents(GunImpact())
+    -- impact:attachComponents(ShapeDraw("rectangle", false, {1,.4, 0}, 1))
+
+    return impact
 end
 
 

@@ -42,6 +42,8 @@ end
 function BaseGun:shoot(world, pos, dir, ignoreComponent)
     self.cooldown = self.maxCooldown
     self.sound:play()
+
+    CompositionManager.addEntity(EntityBuilder.gunImpact(pos, dir.angle))
 end
 
 return BaseGun
